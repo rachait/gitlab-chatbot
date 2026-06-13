@@ -1,6 +1,6 @@
 ﻿import json
 import os
-
+import time
 import faiss
 import numpy as np
 from dotenv import load_dotenv
@@ -123,6 +123,8 @@ def retrieve(query, k=3):
 # ---------------------------
 
 def answer(query, chat_history=None):
+    start_time = time.time()
+
     if chat_history is None:
         chat_history = []
 
@@ -172,8 +174,16 @@ def answer(query, chat_history=None):
             0
         )
 
-    # Reduced retrieval from 5 -> 3
+    # -------------------------
+    # Measure Retrieval Time
+    # -------------------------
+    retrieve_start = time.time()
+
     results = retrieve(query, k=2)
+
+    retrieve_time = time.time() - retrieve_start
+
+    print(f"Retrieve Time: {retrieve_time:.2f}s")
 
     if not results:
         return (
@@ -206,7 +216,20 @@ Question:
         )
     ]
 
+    # -------------------------
+    # Measure LLM Time
+    # -------------------------
+    llm_start = time.time()
+
     response = llm.invoke(messages)
+
+    llm_time = time.time() - llm_start
+
+    print(f"LLM Time: {llm_time:.2f}s")
+
+    total_time = time.time() - start_time
+
+    print(f"Total Time: {total_time:.2f}s")
 
     confidence = round(
         results[0]["score"] * 100,
@@ -225,7 +248,6 @@ Question:
         sources,
         confidence
     )
-
 
 if __name__ == "__main__":
     build_index()
