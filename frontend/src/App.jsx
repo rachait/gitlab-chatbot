@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 
 const API_URL =
   import.meta.env.VITE_API_URL ||
-  "http://localhost:8000/chat";
+  "https://gitlab-chatbot-production.up.railway.app/chat";
 
 const TOPICS = [
   { label: "All Topics", value: "", emoji: "🦊" },
@@ -297,13 +297,16 @@ export default function App() {
         avgTime: ((prev.avgTime * prev.totalQuestions + parseFloat(elapsed)) / (prev.totalQuestions + 1)).toFixed(1),
       }));
 
-    } catch {
-      setMessages(prev => [...prev, {
-        id: Date.now(), role: "assistant",
-        content: "⚠️ Could not connect to the backend. Make sure `uvicorn api:app --reload --port 8000` is running.",
-        sources: [],
-      }]);
-    }
+    } catch (error) {
+  console.error(error);
+
+  setMessages(prev => [...prev, {
+    id: Date.now(),
+    role: "assistant",
+    content: "⚠️ Unable to connect to the GitLab Assistant backend.",
+    sources: [],
+  }]);
+}
 
     setLoading(false);
     inputRef.current?.focus();
