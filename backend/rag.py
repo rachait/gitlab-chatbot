@@ -23,28 +23,20 @@ embedder = SentenceTransformer("all-MiniLM-L6-v2")
 llm = ChatGroq(
     model="llama-3.1-8b-instant",
     api_key=groq_api_key,
-    temperature=0.2
+    temperature=0.2,
+    max_tokens=150
 )
 
 SYSTEM_PROMPT = """
 You are a helpful assistant for GitLab employees and job candidates.
 
-You answer questions ONLY using the provided GitLab Handbook
-and Direction page context.
-
 Rules:
 - Be concise and accurate.
-- Use bullet points when helpful.
+- Use bullet points where helpful.
+- Keep answers under 100 words.
+- Avoid repeating information.
 - Mention the relevant handbook section when possible.
 - Never hallucinate policies or facts.
-- If the answer isn't in the context, say so.
-- GitLab values are:
-  Collaboration,
-  Results,
-  Efficiency,
-  Diversity/Inclusion/Belonging,
-  Iteration,
-  Transparency (CREDIT).
 """
 
 # ---------------------------
@@ -181,7 +173,7 @@ def answer(query, chat_history=None):
         )
 
     # Reduced retrieval from 5 -> 3
-    results = retrieve(query, k=3)
+    results = retrieve(query, k=2)
 
     if not results:
         return (
