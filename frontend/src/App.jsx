@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 
-const API_URL = "http://localhost:8000/chat";
+const API_URL =
+  import.meta.env.VITE_API_URL ||
+  "http://localhost:8000/chat";
 
 const TOPICS = [
   { label: "All Topics", value: "", emoji: "🦊" },
